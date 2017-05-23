@@ -1,0 +1,71 @@
+<?php
+// $Id$
+
+//API information used by devs
+/**
+* @file
+* A module exemplifying Drupal coding practices and APIs.
+*
+* This module provides a block that lists all of the
+* installed modules. It illustrates coding standards,
+* practices, and API use for Drupal 7.
+*/
+
+//Format is important here. Helps devs & tools find the function.
+/**
+* Implements hook_help().
+*/
+
+//name follows hook pattern requirement, replace hook with first
+function first_help($path, $arg) {
+ //return default help screen w/ the stated text & adds link in help menu
+ if ($path == 'admin/help#first') {
+ //always wrap user strings in t() to aid in translation
+ //@ = Drupal will make sure the value isn't harmful
+ //! = Drupal won't translate value
+ //$values = array('!url' => 'http://example.com');
+ //print t('The website can be found at !url', $values);
+ //% = Drupal will escape & add markup to the value in the indicated fashion
+ return t('A demonstration module.');
+ }
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function first_block_info() {
+ $blocks = array();
+
+//create a block named List Modules
+ $blocks['list_modules'] = array(
+  //tell what the block does
+ 'info' => t('A listing of all of the enabled modules.'),
+ //tell how to cache the informatioin (like per user)
+ 'cache' => DRUPAL_NO_CACHE,
+ );
+
+ return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function first_block_view($block_name = '') {
+//tell Drupal to use the above named block
+ if ($block_name == 'list_modules') {
+   //return the above content
+ $list = module_list();
+//send the array items to an ordered list using html
+ $theme_args = array('items' => $list, 'type' => 'ol');
+ $content = theme('item_list', $theme_args);
+//create the block view from the above list
+ $block = array(
+  //title
+ 'subject' => t('Enabled Modules'),
+ //the above content list
+ 'content' => $content,
+ );
+
+ return $block;
+ }
+}
